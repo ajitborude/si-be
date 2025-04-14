@@ -21,6 +21,7 @@ export class InstagramService {
 		const igClientId = this.configService.get<string>('IG_CLIENT_ID') || '';
 		const igClientSecret = this.configService.get<string>('IG_CLIENT_SECRET') || '';
 		const redirectUri = this.configService.get<string>('IG_REDIRECT_URI') || '';
+		const authApi = this.configService.get<string>('INSTAGRAM_AUTH_API') || '';
 		// Exchange code for short lived access_token
 		const fData = new FormData();
 		fData.append('client_id', igClientId);
@@ -29,7 +30,7 @@ export class InstagramService {
 		fData.append('redirect_uri', redirectUri);
 		fData.append('code', code);
 		const { data } = await firstValueFrom(
-			this.httpService.post<SLTokenResDto>('https://api.instagram.com/oauth/access_token', fData).pipe(
+			this.httpService.post<SLTokenResDto>(`${authApi}/access_token`, fData).pipe(
 				catchError((error: AxiosError) => {
 					throw error;
 				}),
@@ -40,10 +41,11 @@ export class InstagramService {
 
 	async getLongLivedToken(token: string) {
 		const igClientSecret = this.configService.get<string>('IG_CLIENT_SECRET') || '';
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
 		const { data } = await firstValueFrom(
 			this.httpService
 				.get<LLTokenResDto>(
-					`https://graph.instagram.com/v22.0/access_token?${createQuery({
+					`${graphApi}/access_token?${createQuery({
 						grant_type: 'ig_exchange_token',
 						client_secret: igClientSecret,
 						access_token: token,
@@ -59,10 +61,12 @@ export class InstagramService {
 	}
 
 	async getUserDetails(token: string) {
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
+
 		const { data } = await firstValueFrom(
 			this.httpService
 				.get<UserResDto>(
-					`https://graph.instagram.com/v22.0/me?${createQuery({
+					`${graphApi}/me?${createQuery({
 						fields: 'user_id,username,name,account_type,profile_picture_url,followers_count,follows_count,media_count,biography',
 						access_token: token,
 					})}`,
@@ -77,10 +81,12 @@ export class InstagramService {
 	}
 
 	async getUserMediaList(userId: string, accessToken: string) {
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
+
 		const { data } = await firstValueFrom(
 			this.httpService
 				.get<any>(
-					`https://graph.instagram.com/v22.0/me/media?${createQuery({
+					`${graphApi}/me/media?${createQuery({
 						fields:
 							'caption,comments_count,id,media_product_type,media_type,media_url,permalink,shortcode,thumbnail_url,timestamp,children{media_url},comments{from,id,like_count,parent_id,replies,text,timestamp,user,username}',
 						limit: 10,
@@ -97,10 +103,12 @@ export class InstagramService {
 	}
 
 	async getMediaComments(mediaId: string, accessToken: string) {
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
+
 		const { data } = await firstValueFrom(
 			this.httpService
 				.get<any>(
-					`https://graph.instagram.com/v22.0/${mediaId}/comments?${createQuery({
+					`${graphApi}/${mediaId}/comments?${createQuery({
 						fields: 'from,id,like_count,parent_id,replies,text,timestamp,user,username',
 						access_token: accessToken,
 					})}`,
@@ -115,10 +123,12 @@ export class InstagramService {
 	}
 
 	async replyToComment(accessToken: string, commentId: string, message: string) {
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
+
 		const { data } = await firstValueFrom(
 			this.httpService
 				.post<any>(
-					`https://graph.instagram.com/v22.0/${commentId}/replies?${createQuery({
+					`${graphApi}/${commentId}/replies?${createQuery({
 						message: message,
 						access_token: accessToken,
 					})}`,

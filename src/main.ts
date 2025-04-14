@@ -13,8 +13,6 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
 	const allowedOrigins = configService.get('ALLOWED_ORIGIN').split(',');
-	console.log('🚀 ~ ', allowedOrigins);
-
 	app.enableCors({
 		credentials: true,
 		origin: allowedOrigins,
