@@ -20,6 +20,9 @@ export class User {
 	account_type: string;
 
 	@Prop()
+	biography: string;
+
+	@Prop()
 	profile_picture_url: string;
 
 	@Prop()
