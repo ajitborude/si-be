@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { doubleCsrf } from 'csrf-csrf';
+// import { doubleCsrf } from 'csrf-csrf';
 import * as morgan from 'morgan';
 import { customLogger } from './common/utils/logger';
 import { ConfigService } from '@nestjs/config';
@@ -12,10 +11,11 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 	const configService = app.get(ConfigService);
-	const allowedOrigins = configService.get('ALLOWED_ORIGIN').split(',');
+	// const allowedOrigins = configService.get('ALLOWED_ORIGIN') || /\.loca\.lt$/;
 	app.enableCors({
 		credentials: true,
-		origin: allowedOrigins,
+		origin: [/\.onrender\.com$/, /\.loca\.lt$/, 'http://localhost:5173'],
+		// origin: /\.loca\.lt$/,
 	});
 	app.useGlobalPipes(new ValidationPipe());
 	app.setGlobalPrefix('api/v1', {
@@ -48,4 +48,4 @@ async function bootstrap() {
 
 	await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

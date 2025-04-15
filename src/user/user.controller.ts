@@ -14,15 +14,7 @@ export class UserController {
 	getUser(@UserEntity() user: User) {
 		return {
 			message: 'Success',
-			data: omit(user, ['access_token', 'user_id']),
-		};
-	}
-
-	@Get('dummy')
-	dummyAPI() {
-		return {
-			message: 'Success',
-			data: ['access_token', 'user_id'],
+			data: omit(user, ['access_token']),
 		};
 	}
 }

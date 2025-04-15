@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
+
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -13,6 +13,7 @@ import configuration from './common/condig/configuration';
 import { HealthModule } from './health/health.module';
 import { InstagramModule } from './instagram/instagram.module';
 import { UserModule } from './user/user.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
 	imports: [
@@ -45,6 +46,7 @@ import { UserModule } from './user/user.module';
 		HttpModule.register({
 			global: true,
 		}),
+		ThrottlerModule.forRoot(),
 		AuthModule,
 		HealthModule,
 		UserModule,

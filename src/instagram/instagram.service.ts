@@ -80,16 +80,15 @@ export class InstagramService {
 		return data;
 	}
 
-	async getUserMediaList(userId: string, accessToken: string) {
+	async getUserMediaList(accessToken: string) {
 		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
 
 		const { data } = await firstValueFrom(
 			this.httpService
 				.get<any>(
 					`${graphApi}/me/media?${createQuery({
-						fields:
-							'caption,comments_count,id,media_product_type,media_type,media_url,permalink,shortcode,thumbnail_url,timestamp,children{media_url},comments{from,id,like_count,parent_id,replies,text,timestamp,user,username}',
-						limit: 10,
+						fields: 'caption,comments_count,id,media_product_type,media_type,media_url,permalink,shortcode,thumbnail_url,timestamp,children{media_url}',
+						limit: 50,
 						access_token: accessToken,
 					})}`,
 				)
@@ -99,6 +98,31 @@ export class InstagramService {
 					}),
 				),
 		);
+		return data;
+	}
+
+	async getUserMedia(accessToken: string, mediaId: string) {
+		const graphApi = this.configService.get<string>('INSTAGRAM_GRAPH_API') || '';
+
+		const { data } = await firstValueFrom(
+			this.httpService
+				.get<any>(
+					`${graphApi}/${mediaId}?${createQuery({
+						fields:
+							'caption,comments_count,id,media_product_type,media_type,media_url,permalink,shortcode,thumbnail_url,timestamp,children{media_url},comments{from,id,like_count,parent_id,replies{id,text,timestamp},text,timestamp,user,username}',
+						limit: 50,
+						access_token: accessToken,
+					})}`,
+				)
+				.pipe(
+					catchError((error: AxiosError) => {
+						throw error;
+					}),
+				),
+		);
+		// 	// Fetch profile_urls for commenter
+		// if (data.comments.data) {
+		// }
 		return data;
 	}
 
